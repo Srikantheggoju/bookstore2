@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "srikantheggoju/bookstore"
-        GITOPS_REPO = "https://github.com/Srikantheggoju/bookstore-gitops.git"
+        GITOPS_REPO = "https://github.com/Srikantheggoju/bookstore2-gitops.git"
     }
 
     stages {
@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/Srikantheggoju/bookstore-app.git'
+                url: 'https://github.com/Srikantheggoju/bookstore2-app.git'
             }
         }
 
