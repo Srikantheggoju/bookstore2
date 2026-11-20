@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "srikantheggoju/bookstore"
-        GITOPS_REPO = "https://github.com/Srikantheggoju/manifestrepo.git"
+        GITOPS_REPO = "https://github.com/Srikantheggoju/bookstoremanifest.git"
     }
 
     stages {
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'dockerhub',
+                        credentialsId: 'dockerhub-creds',
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS'
                     )
@@ -71,21 +71,23 @@ pipeline {
                         passwordVariable: 'GIT_PASS'
                     )
                 ]) {
-
                     sh '''
-                    rm -rf manifestrepo
+                    rm -rf bookstoremanifest
 
-                    git clone https://${GIT_USER}:${GIT_PASS}@github.com/Srikantheggoju/manifestrepo.git
+                    git clone https://${GIT_USER}:${GIT_PASS}@github.com/Srikantheggoju/bookstoremanifest.git
 
-                    cd manifestrepo
+                    cd bookstoremanifest
 
-                    sed -i "s/tag:.*/tag: \\"${BUILD_NUMBER}\\"/" values.yaml
+                    find . -name values.yaml
+
+                    sed -i "s/tag:.*/tag: \\"${BUILD_NUMBER}\\"/" helm-chart/values.yaml
 
                     git config user.email "jenkins@local.com"
                     git config user.name "Jenkins"
 
                     git add .
-                    git commit -m "Updated image tag to ${BUILD_NUMBER}" || true
+
+                    git commit -m "Updated image tag to build ${BUILD_NUMBER}" || true
 
                     git push origin main
                     '''
